@@ -1,0 +1,9 @@
+experiment_name: baseline
+chunking_strategy: fixed
+chunk_size: 500
+chunk_overlap: 50
+hybrid_search: false
+reranker: false
+query_rewriting: false
+top_k_retrieval: 5
+top_k_rerank: 5

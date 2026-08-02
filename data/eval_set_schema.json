@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EvalQuestionSet",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "id": { "type": "string" },
+      "question": { "type": "string" },
+      "ground_truth_answer": { "type": "string" },
+      "ground_truth_source_papers": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "category": { "type": "string" }
+    },
+    "required": ["question", "ground_truth_answer", "ground_truth_source_papers", "category"]
+  }
+}

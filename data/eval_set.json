@@ -1,0 +1,9 @@
+[
+  {
+    "id": "q1",
+    "question": "What chunking strategy is recommended for multi-hop RAG?",
+    "ground_truth_answer": "Structure-aware recursive chunking combined with semantic clustering improves multi-hop retrieval performance.",
+    "ground_truth_source_papers": ["2312.00001"],
+    "category": "chunking"
+  }
+]
