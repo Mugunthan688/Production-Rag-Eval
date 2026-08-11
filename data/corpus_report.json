@@ -1,0 +1,14 @@
+{
+  "total_papers": 2033,
+  "total_chunks": 11755,
+  "topic_distribution": {
+    "RAG Core": 522,
+    "Retrieval & Reranking": 417,
+    "Advanced RAG": 400,
+    "LLM & Agent Foundations": 200,
+    "Evaluation & Benchmarks": 200,
+    "Supporting Technologies": 100
+  },
+  "primary_sources_covered": 11,
+  "last_updated": "2026-08-10T19:28:01.570040"
+}

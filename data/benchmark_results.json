@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-08-10T19:46:10.076339",
+  "total_questions_evaluated": 100,
+  "metrics": {
+    "mean_precision_at_5": 0.6,
+    "mean_mrr": 0.784,
+    "success_rate": 0.78,
+    "retrieval_failure_rate": 0.0,
+    "corpus_missing_rate": 0.22,
+    "abstention_accuracy": 0.5
+  },
+  "breakdown_counts": {
+    "success": 78,
+    "retrieval_failure": 0,
+    "corpus_missing": 22
+  }
+}

@@ -6,7 +6,7 @@ import pandas as pd
 
 def load_all_experiment_results(results_dir: str = "results") -> List[Dict[str, Any]]:
     path = Path(results_dir)
-    results = []
+    results: List[Dict[str, Any]] = []
     if not path.exists():
         return results
 

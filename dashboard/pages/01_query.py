@@ -10,12 +10,8 @@ import streamlit as st
 import httpx
 import os
 
-try:
-    from dashboard.components.chunk_viewer import render_chunk_viewer
-    from dashboard.components.styles import apply_master_theme
-except ImportError:
-    from components.chunk_viewer import render_chunk_viewer
-    from components.styles import apply_master_theme
+from dashboard.components.chunk_viewer import render_chunk_viewer
+from dashboard.components.styles import apply_master_theme
 
 st.set_page_config(page_title="Interactive Query Inspector", page_icon="🔍", layout="wide")
 apply_master_theme()
@@ -50,59 +46,72 @@ if st.button("Run Query"):
             )
 
             if resp.status_code == 200:
-                data = resp.json()
-                latency = data.get('latency_ms', 0)
-                
-                st.markdown(
-                    f"""
-                    <div style="display: flex; gap: 12px; margin-bottom: 20px; align-items: center;">
-                        <span class="badge-green">Latency: {latency:.2f} ms</span>
-                        <span class="badge-violet">Strategy: {chunking_strategy}</span>
-                        <span class="badge-amber">Chunks Used: {len(data.get('chunks_used', []))}</span>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-
-                st.markdown(
-                    f"""
-                    <div class="glass-card">
-                        <h3 style="color: #6366F1; margin-top:0;">🤖 Generated Answer & Citations</h3>
-                        <div style="font-size: 1.05rem; line-height: 1.7; color: #F3F4F6;">
-                            {data.get("answer", "")}
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-
-                st.subheader("📚 Retrieved & Reranked Context Chunks")
-                render_chunk_viewer(data.get("chunks_used", []))
-
-                # Feedback widget
-                st.divider()
-                st.subheader("Submit Query Feedback")
-                col1, col2 = st.columns([1, 4])
-                with col1:
-                    rating = st.radio("Rating", ["👍 Thumbs Up (+1)", "👎 Thumbs Down (-1)"])
-                with col2:
-                    comment = st.text_input("Optional comment / feedback:")
-
-                if st.button("Submit Feedback"):
-                    rate_val = 1 if "Up" in rating else -1
-                    chunk_ids = [c["chunk_id"] for c in data.get("chunks_used", [])]
-                    httpx.post(
-                        f"{API_URL}/feedback",
-                        json={
-                            "query": query,
-                            "answer": data.get("answer", ""),
-                            "chunks_used": chunk_ids,
-                            "rating": rate_val,
-                            "comments": comment,
-                        },
-                    )
-                    st.success("Feedback submitted!")
+                st.session_state["query_data"] = resp.json()
+                st.session_state["current_query"] = query
+                st.session_state["used_strategy"] = chunking_strategy
             else:
                 st.error(f"API Error {resp.status_code}: {resp.text}")
         except Exception as e:
             st.error(f"Could not connect to API server at {API_URL}: {e}")
+
+# Render query results if available in session state
+if "query_data" in st.session_state and st.session_state["query_data"]:
+    data = st.session_state["query_data"]
+    curr_query = st.session_state.get("current_query", query)
+    strategy = st.session_state.get("used_strategy", chunking_strategy)
+    latency = data.get("latency_ms", 0)
+
+    st.markdown(
+        f"""
+        <div style="display: flex; gap: 12px; margin-bottom: 20px; align-items: center;">
+            <span class="badge-green">Latency: {latency:.2f} ms</span>
+            <span class="badge-violet">Strategy: {strategy}</span>
+            <span class="badge-amber">Chunks Used: {len(data.get('chunks_used', []))}</span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        f"""
+        <div class="glass-card">
+            <h3 style="color: #6366F1; margin-top:0;">🤖 Generated Answer & Citations</h3>
+            <div style="font-size: 1.05rem; line-height: 1.7; color: #F3F4F6;">
+                {data.get("answer", "")}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.subheader("📚 Retrieved & Reranked Context Chunks")
+    render_chunk_viewer(data.get("chunks_used", []))
+
+    # Feedback widget
+    st.divider()
+    st.subheader("Submit Query Feedback")
+    col1, col2 = st.columns([1, 4])
+    with col1:
+        rating = st.radio("Rating", ["👍 Thumbs Up (+1)", "👎 Thumbs Down (-1)"])
+    with col2:
+        comment = st.text_input("Optional comment / feedback:")
+
+    if st.button("Submit Feedback"):
+        rate_val = 1 if "Up" in rating else -1
+        chunk_ids = [c["chunk_id"] for c in data.get("chunks_used", [])]
+        try:
+            httpx.post(
+                f"{API_URL}/feedback",
+                json={
+                    "query": curr_query,
+                    "answer": data.get("answer", ""),
+                    "chunks_used": chunk_ids,
+                    "rating": rate_val,
+                    "comments": comment,
+                },
+                timeout=5.0,
+            )
+            st.success("Feedback submitted successfully!")
+        except Exception as fb_err:
+            st.error(f"Failed to submit feedback: {fb_err}")
+

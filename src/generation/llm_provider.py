@@ -1,6 +1,6 @@
+import os
 import httpx
 from abc import ABC, abstractmethod
-from typing import List, Dict
 from openai import OpenAI
 from anthropic import Anthropic
 
@@ -29,7 +29,8 @@ class OpenAILLMProvider(BaseLLMProvider):
             ],
             temperature=0.2,
         )
-        return response.choices[0].message.content.strip()
+        content = response.choices[0].message.content
+        return content.strip() if content else ""
 
 
 class AnthropicLLMProvider(BaseLLMProvider):
@@ -47,10 +48,9 @@ class AnthropicLLMProvider(BaseLLMProvider):
             messages=[{"role": "user", "content": user_prompt}],
             temperature=0.2,
         )
-        return response.content[0].text.strip()
-
-
-import os
+        block = response.content[0]
+        text = block.text if hasattr(block, "text") else str(block)
+        return text.strip() if text else ""
 
 
 class GeminiLLMProvider(BaseLLMProvider):

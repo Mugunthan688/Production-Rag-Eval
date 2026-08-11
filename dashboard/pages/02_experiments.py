@@ -11,12 +11,8 @@ import json
 import pandas as pd
 from src.evaluation.comparator import build_comparison_dataframe
 
-try:
-    from dashboard.components.metrics_table import render_metrics_table
-    from dashboard.components.styles import apply_master_theme
-except ImportError:
-    from components.metrics_table import render_metrics_table
-    from components.styles import apply_master_theme
+from dashboard.components.metrics_table import render_metrics_table
+from dashboard.components.styles import apply_master_theme
 
 st.set_page_config(page_title="Experiment Comparison", page_icon="📊", layout="wide")
 apply_master_theme()

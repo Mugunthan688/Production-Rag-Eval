@@ -1,5 +1,7 @@
 import sys
+import os
 from pathlib import Path
+import httpx
 
 # Ensure project root is in sys.path
 root_dir = Path(__file__).resolve().parent.parent
@@ -7,10 +9,8 @@ if str(root_dir) not in sys.path:
     sys.path.insert(0, str(root_dir))
 
 import streamlit as st
-try:
-    from dashboard.components.styles import apply_master_theme
-except ImportError:
-    from components.styles import apply_master_theme
+
+from dashboard.components.styles import apply_master_theme
 
 st.set_page_config(
     page_title="Production RAG System | Deep Research AI",
@@ -21,19 +21,35 @@ st.set_page_config(
 
 apply_master_theme()
 
+# Fetch live stats from API if available
+API_URL = os.getenv("API_URL", "http://localhost:8000")
+total_papers = "80+"
+total_chunks = "488+"
+api_status = "Offline (Default Data)"
+
+try:
+    resp = httpx.get(f"{API_URL}/papers/stats", timeout=3.0)
+    if resp.status_code == 200:
+        stats = resp.json()
+        total_papers = f"{stats.get('total_papers', 80):,}"
+        total_chunks = f"{stats.get('total_chunks', 488):,}"
+        api_status = "Online & Connected"
+except Exception:
+    pass
+
 st.markdown('<div class="hero-title">⚡ Deep Research RAG Engine</div>', unsafe_allow_html=True)
 st.markdown('<div class="hero-subtitle">Production-grade Retrieval-Augmented Generation over arXiv AI Research Papers</div>', unsafe_allow_html=True)
 
 # Overview Metrics Grid
 col1, col2, col3, col4 = st.columns(4)
 with col1:
-    st.metric(label="Active Corpus", value="arXiv CS.AI", delta="Indexed")
+    st.metric(label="Indexed Papers", value=total_papers, delta=api_status)
 with col2:
-    st.metric(label="Hybrid Retrieval", value="Dense + BM25", delta="RRF Active")
+    st.metric(label="Vector Chunks", value=total_chunks, delta="Dense + BM25")
 with col3:
     st.metric(label="Reranker Model", value="Cross-Encoder", delta="ms-marco")
 with col4:
-    st.metric(label="LLM Provider", value="Google Gemini", delta="v1beta")
+    st.metric(label="LLM Engine", value="Google Gemini", delta="v1beta")
 
 st.markdown("<br>", unsafe_allow_html=True)
 
@@ -52,3 +68,4 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+

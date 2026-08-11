@@ -5,5 +5,68 @@
     "ground_truth_answer": "Structure-aware recursive chunking combined with semantic clustering improves multi-hop retrieval performance.",
     "ground_truth_source_papers": ["2312.00001"],
     "category": "chunking"
+  },
+  {
+    "id": "q2",
+    "question": "How does GraphRAG improve retrieval over flat vector search?",
+    "ground_truth_answer": "GraphRAG builds a knowledge graph from source documents and uses graph-based community detection to create hierarchical summaries, enabling global reasoning across the entire corpus rather than just local semantic similarity matching.",
+    "ground_truth_source_papers": [],
+    "category": "graph_rag"
+  },
+  {
+    "id": "q3",
+    "question": "What is Self-RAG and how does it reduce hallucination?",
+    "ground_truth_answer": "Self-RAG trains the language model to generate special reflection tokens that decide when to retrieve, assess relevance of retrieved passages, and critique its own generation for factual consistency, reducing hallucination through self-evaluation.",
+    "ground_truth_source_papers": [],
+    "category": "self_rag"
+  },
+  {
+    "id": "q4",
+    "question": "How does Corrective RAG detect and fix retrieval errors?",
+    "ground_truth_answer": "Corrective RAG (CRAG) introduces a lightweight retrieval evaluator that scores retrieved documents for relevance, and if documents are deemed ambiguous or incorrect, it triggers web search augmentation or knowledge refinement to correct the retrieval before generation.",
+    "ground_truth_source_papers": [],
+    "category": "corrective_rag"
+  },
+  {
+    "id": "q5",
+    "question": "What role do knowledge graphs play in RAG systems?",
+    "ground_truth_answer": "Knowledge graphs provide structured relational context that complements unstructured text retrieval, enabling multi-hop reasoning, entity disambiguation, and global summarization that flat vector stores cannot achieve alone.",
+    "ground_truth_source_papers": [],
+    "category": "graph_rag"
+  },
+  {
+    "id": "q6",
+    "question": "How does agentic RAG differ from standard RAG?",
+    "ground_truth_answer": "Agentic RAG uses autonomous LLM agents that can plan multi-step retrieval strategies, decide which tools or data sources to query, iteratively refine their search, and self-evaluate answer quality before returning results.",
+    "ground_truth_source_papers": [],
+    "category": "agentic_rag"
+  },
+  {
+    "id": "q7",
+    "question": "What are the advantages of speculative RAG over standard RAG?",
+    "ground_truth_answer": "Speculative RAG uses a smaller specialist LM to generate multiple draft answers from different subsets of retrieved documents in parallel, then a larger generalist LM verifies and selects the best draft, reducing latency while improving accuracy.",
+    "ground_truth_source_papers": [],
+    "category": "speculative_rag"
+  },
+  {
+    "id": "q8",
+    "question": "How do long-context LLMs affect RAG system design?",
+    "ground_truth_answer": "Long-context LLMs can process larger input windows (100K+ tokens), reducing the need for aggressive chunking and retrieval-then-read patterns. However, retrieval still improves accuracy by focusing attention on relevant passages and reducing the lost-in-the-middle problem.",
+    "ground_truth_source_papers": [],
+    "category": "long_context"
+  },
+  {
+    "id": "q9",
+    "question": "What embedding models work best for scientific paper retrieval?",
+    "ground_truth_answer": "Domain-specific models like SPECTER2 and SciBERT outperform general-purpose embeddings for scientific retrieval. Among general models, BGE, GTE, and E5 show strong performance, especially when fine-tuned on academic corpora.",
+    "ground_truth_source_papers": [],
+    "category": "embeddings"
+  },
+  {
+    "id": "q10",
+    "question": "How does multimodal RAG handle figures and tables in papers?",
+    "ground_truth_answer": "Multimodal RAG systems use vision-language models to encode figures, charts, and tables alongside text into a shared embedding space, enabling retrieval of visual evidence. Some approaches use OCR and table parsing to convert visual elements into structured text for indexing.",
+    "ground_truth_source_papers": [],
+    "category": "multimodal_rag"
   }
 ]

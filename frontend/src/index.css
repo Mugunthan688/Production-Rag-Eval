@@ -1,0 +1,663 @@
+/* =====================================================
+   MARGINALIA — Design System
+   Research journal × signal-analysis control room
+   Paper-and-ink, thin-line, alive.
+   ===================================================== */
+
+/* Fonts: Fraunces (editorial serif) + Inter (grotesk) + JetBrains Mono */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@import "tailwindcss";
+
+/* ─── Color Tokens ─────────────────────────────────── */
+:root {
+  /* Canvas */
+  --canvas:       #0B0B0D;
+  --surface:      #141416;
+  --surface-2:    #1A1A1D;
+
+  /* Borders — thin-line language */
+  --border:       #26262A;
+  --border-muted: #1E1E22;
+  --border-strong:#34343A;
+
+  /* Ink (text) */
+  --ink:          #F2F1ED;
+  --ink-muted:    #8C8B87;
+  --ink-faint:    #4A4A50;
+
+  /* Accent: Orange = USER actions */
+  --orange:       #FF4F00;
+  --orange-dim:   rgba(255, 79, 0, 0.15);
+  --orange-pulse: rgba(255, 79, 0, 0.35);
+
+  /* Accent: Cobalt = RAG citations/evidence */
+  --cobalt:       #3E6FFF;
+  --cobalt-dim:   rgba(62, 111, 255, 0.15);
+  --cobalt-trace: rgba(62, 111, 255, 0.8);
+
+  /* Semantic */
+  --weak-match:   #5C5C66;
+}
+
+/* ─── Reset & Base ─────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 16px;
+}
+
+body {
+  background-color: var(--canvas);
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 400;
+}
+
+/* ─── Typography System ─────────────────────────────── */
+
+/* Editorial serif — answer text, quotes */
+.font-editorial {
+  font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+}
+
+/* Bold grotesk — headers, nav */
+.font-grotesk {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+/* Monospace — metadata, IDs, timestamps, status */
+.font-mono,
+.mono {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+}
+
+.mono-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  font-weight: 500;
+  color: var(--ink-muted);
+}
+
+/* ─── Surface & Border Language ─────────────────────── */
+
+.surface {
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.surface-2 {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+/* Hairline — the core design primitive */
+.hairline { border: 1px solid var(--border); }
+.hairline-t { border-top: 1px solid var(--border); }
+.hairline-b { border-bottom: 1px solid var(--border); }
+.hairline-l { border-left: 1px solid var(--border); }
+.hairline-r { border-right: 1px solid var(--border); }
+
+/* No shadows — elevation by border weight only */
+.elevated { border-color: var(--border-strong); }
+
+/* ─── Sharp Corners — structural max 2px ──────────── */
+.sharp { border-radius: 2px; }
+.sharp-sm { border-radius: 1px; }
+.sharp-none { border-radius: 0; }
+
+/* ─── Blueprint Grid Background ─────────────────────── */
+.blueprint-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(62, 111, 255, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(62, 111, 255, 0.028) 1px, transparent 1px);
+  background-size: 48px 48px;
+  animation: gridDrift 22s ease-in-out infinite;
+}
+
+@keyframes gridDrift {
+  0%, 100% { background-position: 0px 0px; }
+  33%       { background-position: 0.5px 0.3px; }
+  66%       { background-position: -0.3px 0.5px; }
+}
+
+/* Corpus breathing pulse points */
+.corpus-pulse {
+  position: fixed;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--cobalt);
+  opacity: 0;
+  animation: corpusBreathe 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes corpusBreathe {
+  0%, 100% { opacity: 0;    transform: scale(1); }
+  50%       { opacity: 0.25; transform: scale(1.8); }
+}
+
+.corpus-pulse--active {
+  animation: corpusPulseOut 0.6s ease-out forwards;
+}
+
+@keyframes corpusPulseOut {
+  0%   { opacity: 0.6; transform: scale(1); }
+  100% { opacity: 0;   transform: scale(6); }
+}
+
+/* ─── Paper-Grain Noise Overlay ─────────────────────── */
+.grain-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.015'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  pointer-events: none;
+  opacity: 0.015;
+  mix-blend-mode: overlay;
+}
+
+/* ─── INK REVEAL — answer streaming effect ──────────── */
+@keyframes inkSweep {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+@keyframes inkSettle {
+  from { opacity: 0.1; }
+  to   { opacity: 1; }
+}
+
+.ink-sentence {
+  position: relative;
+  display: inline;
+}
+
+.ink-sentence::before {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--cobalt);
+  transform-origin: left center;
+  animation: inkSweep 120ms ease-out forwards;
+}
+
+.ink-sentence--settling {
+  animation: inkSettle 80ms ease-out forwards;
+  animation-delay: 100ms;
+}
+
+/* ─── CITATION MARKERS — inline [n] ─────────────────── */
+.citation-marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.15em;
+  height: 1.15em;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65em;
+  font-weight: 600;
+  color: var(--cobalt);
+  border: 1px solid var(--cobalt-dim);
+  border-radius: 2px;
+  cursor: pointer;
+  margin: 0 1px;
+  vertical-align: super;
+  line-height: 1;
+  transition: background 120ms ease;
+  position: relative;
+}
+
+.citation-marker:hover {
+  background: var(--cobalt-dim);
+}
+
+@keyframes citationPulse {
+  0%   { box-shadow: 0 0 0 0 var(--orange-pulse); }
+  60%  { box-shadow: 0 0 0 8px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+.citation-marker--new {
+  animation: citationPulse 600ms ease-out forwards;
+}
+
+/* ─── EVIDENCE CARDS ─────────────────────────────────── */
+.evidence-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 14px;
+  position: relative;
+  transition: transform 200ms ease-out, border-color 200ms ease;
+  cursor: default;
+}
+
+.evidence-card:hover {
+  transform: rotate(0deg) !important;
+  border-color: var(--border-strong);
+}
+
+.evidence-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 2px;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.018'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.018;
+  mix-blend-mode: overlay;
+}
+
+.evidence-card--weak {
+  border-color: var(--border-muted);
+  opacity: 0.75;
+}
+
+.evidence-card__passage {
+  font-family: 'Fraunces', Georgia, serif;
+  font-style: italic;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--ink-muted);
+  border-left: 2px solid var(--border-strong);
+  padding-left: 10px;
+  margin: 8px 0;
+}
+
+/* ─── RELEVANCE BAR ─────────────────────────────────── */
+.relevance-bar {
+  height: 2px;
+  background: var(--border);
+  border-radius: 1px;
+  overflow: hidden;
+  position: relative;
+}
+
+.relevance-bar__fill {
+  height: 100%;
+  background: var(--cobalt);
+  border-radius: 1px;
+  transform-origin: left center;
+}
+
+.relevance-bar__fill--weak {
+  background: var(--weak-match);
+}
+
+@keyframes relevanceFill {
+  0%   { transform: scaleX(0); }
+  80%  { transform: scaleX(var(--target, 1)) scaleX(1.04); }
+  100% { transform: scaleX(var(--target, 1)); }
+}
+
+/* ─── QUERY BAR ─────────────────────────────────────── */
+.query-bar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  position: relative;
+  transition: border-color 150ms ease;
+}
+
+.query-bar:focus-within {
+  border-color: var(--orange);
+}
+
+/* Indeterminate progress line (loading) */
+.query-bar__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--border);
+  overflow: hidden;
+  border-radius: 0 0 2px 2px;
+}
+
+.query-bar__progress-fill {
+  height: 100%;
+  width: 40%;
+  background: var(--cobalt);
+  animation: progressSlide 1.4s ease-in-out infinite;
+}
+
+@keyframes progressSlide {
+  0%   { transform: translateX(-150%); }
+  100% { transform: translateX(350%); }
+}
+
+/* Status text cycle */
+.status-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-faint);
+}
+
+/* ─── BUTTONS — typographic, no fill change on hover ── */
+.btn-editorial {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+
+.btn-editorial:hover {
+  color: var(--ink);
+  border-color: var(--border-strong);
+}
+
+/* Label lifts 2px + underline sweeps on hover */
+.btn-editorial__label {
+  position: relative;
+  transition: transform 120ms ease;
+}
+
+.btn-editorial:hover .btn-editorial__label {
+  transform: translateY(-2px);
+}
+
+.btn-editorial__label::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 150ms ease-out;
+}
+
+.btn-editorial:hover .btn-editorial__label::after {
+  transform: scaleX(1);
+}
+
+/* Orange submit button */
+.btn-submit {
+  background: var(--orange);
+  border: none;
+  border-radius: 2px;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: opacity 120ms ease, transform 80ms ease;
+}
+
+.btn-submit:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+.btn-submit:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.btn-submit:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ─── HISTORY RAIL ─────────────────────────────────── */
+.history-tab {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 100ms ease;
+  border: 1px solid transparent;
+}
+
+.history-tab:hover {
+  background: var(--surface-2);
+  border-color: var(--border-muted);
+}
+
+.history-tab--active {
+  background: var(--surface-2);
+  border-color: var(--border);
+}
+
+.history-tab__tick {
+  color: var(--cobalt);
+  font-size: 0.6rem;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.history-tab__text {
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+  line-height: 1.4;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* ─── CONSTELLATION TRACE — SVG overlay ─────────────── */
+.constellation-svg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.trace-path {
+  fill: none;
+  stroke: var(--cobalt-trace);
+  stroke-width: 1px;
+  stroke-dasharray: 4 4;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.trace-path--active {
+  opacity: 1;
+  stroke-dasharray: none;
+}
+
+.trace-path--weak {
+  stroke-dasharray: 3 3;
+}
+
+/* Traveling segment */
+@keyframes traceTravel {
+  0%   { stroke-dashoffset: 80; }
+  100% { stroke-dashoffset: 0; }
+}
+
+.trace-segment {
+  fill: none;
+  stroke: var(--cobalt);
+  stroke-width: 1.5px;
+  animation: traceTravel 400ms ease-out forwards;
+}
+
+/* ─── ANSWER TEXT ─────────────────────────────────────── */
+.answer-text {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--ink);
+  font-weight: 400;
+}
+
+.answer-text p { margin-bottom: 0.9em; }
+.answer-text strong { font-weight: 600; color: var(--ink); }
+.answer-text em { font-style: italic; }
+.answer-text a { color: var(--cobalt); text-decoration: underline; text-underline-offset: 2px; }
+.answer-text h1, .answer-text h2, .answer-text h3 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin: 1.2em 0 0.4em;
+}
+.answer-text h1 { font-size: 1.3em; }
+.answer-text h2 { font-size: 1.15em; }
+.answer-text h3 { font-size: 1em; }
+.answer-text code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8em;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  padding: 1px 5px;
+  border-radius: 2px;
+}
+.answer-text pre {
+  background: var(--surface-2) !important;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 12px 14px;
+  overflow-x: auto;
+  margin: 0.8em 0;
+}
+.answer-text ul, .answer-text ol {
+  padding-left: 1.5em;
+  margin-bottom: 0.8em;
+}
+.answer-text li { margin-bottom: 0.3em; }
+.answer-text blockquote {
+  border-left: 2px solid var(--cobalt);
+  padding-left: 12px;
+  color: var(--ink-muted);
+  font-style: italic;
+  margin: 0.8em 0;
+}
+
+/* ─── USER QUERY BUBBLE ─────────────────────────────── */
+.user-query {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 10px 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  color: var(--ink);
+  align-self: flex-end;
+  max-width: 560px;
+}
+
+/* ─── SCROLLBAR ─────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 1px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); }
+
+/* ─── SELECTION ─────────────────────────────────────── */
+::selection {
+  background: var(--orange-dim);
+  color: var(--ink);
+}
+
+/* ─── TYPEWRITER PLACEHOLDER ────────────────────────── */
+@keyframes caretBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.typewriter-caret {
+  display: inline-block;
+  width: 1px;
+  height: 1em;
+  background: var(--ink-muted);
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  animation: caretBlink 1s step-end infinite;
+}
+
+/* ─── WEAK MATCH TAG ────────────────────────────────── */
+.tag-weak-match {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--weak-match);
+  border: 1px solid var(--weak-match);
+  padding: 1px 5px;
+  border-radius: 1px;
+}
+
+/* ─── CHIP — example question ──────────────────────── */
+.question-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+  cursor: pointer;
+  transition: border-color 120ms ease, color 120ms ease;
+  text-align: left;
+}
+
+.question-chip:hover {
+  border-color: var(--border-strong);
+  color: var(--ink);
+}
+
+/* ─── ARIV LINK ─────────────────────────────────────── */
+.arxiv-link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+  text-decoration: none;
+  transition: color 120ms ease;
+}
+
+.arxiv-link:hover { color: var(--ink); }
+
+.arxiv-link--unavailable {
+  color: var(--ink-faint);
+  pointer-events: none;
+  cursor: not-allowed;
+}

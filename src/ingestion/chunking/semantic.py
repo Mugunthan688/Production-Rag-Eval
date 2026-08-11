@@ -13,7 +13,7 @@ class SemanticChunker(BaseChunker):
         sentences = re.split(r"(?<=[.!?]) +", content)
         chunks: List[Chunk] = []
 
-        current_chunk_sentences = []
+        current_chunk_sentences: List[str] = []
         current_len = 0
         idx = 0
 

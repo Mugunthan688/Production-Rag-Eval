@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Canvas background -->
+  <rect width="32" height="32" fill="#0B0B0D"/>
+  <!-- Grid lines (blueprint) -->
+  <line x1="8" y1="2" x2="8" y2="30" stroke="#3E6FFF" stroke-opacity="0.2" stroke-width="0.5"/>
+  <line x1="16" y1="2" x2="16" y2="30" stroke="#3E6FFF" stroke-opacity="0.2" stroke-width="0.5"/>
+  <line x1="24" y1="2" x2="24" y2="30" stroke="#3E6FFF" stroke-opacity="0.2" stroke-width="0.5"/>
+  <line x1="2" y1="8" x2="30" y2="8" stroke="#3E6FFF" stroke-opacity="0.2" stroke-width="0.5"/>
+  <line x1="2" y1="16" x2="30" y2="16" stroke="#3E6FFF" stroke-opacity="0.2" stroke-width="0.5"/>
+  <line x1="2" y1="24" x2="30" y2="24" stroke="#3E6FFF" stroke-opacity="0.2" stroke-width="0.5"/>
+  <!-- M letterform -->
+  <path d="M7 22V10L12.5 18L16 13L19.5 18L25 10V22" stroke="#F2F1ED" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter" fill="none"/>
+  <!-- Orange accent dot -->
+  <circle cx="16" cy="13" r="1.5" fill="#FF4F00"/>
+</svg>

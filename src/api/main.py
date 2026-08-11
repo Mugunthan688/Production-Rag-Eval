@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from ..config.settings import settings
 from ..db.engine import init_db
 from .middleware import LatencyLoggingMiddleware
-from .routes import health, query, ingest, eval as eval_route, feedback
+from .routes import health, query, ingest, eval as eval_route, feedback, papers
 
 
 @asynccontextmanager
@@ -26,7 +26,7 @@ app = FastAPI(
 app.add_middleware(LatencyLoggingMiddleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*", "http://localhost:5173", "http://localhost:8501"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -47,3 +47,4 @@ app.include_router(query.router)
 app.include_router(ingest.router)
 app.include_router(eval_route.router)
 app.include_router(feedback.router)
+app.include_router(papers.router)

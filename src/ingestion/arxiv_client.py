@@ -1,8 +1,7 @@
 import logging
 import re
 from datetime import datetime
-from typing import List, Optional
-import xml.etree.ElementTree as ET
+from typing import List, Any
 import httpx
 import feedparser
 
@@ -25,7 +24,7 @@ class ArxivClient:
         sort_by: str = "submittedDate",
         sort_order: str = "descending",
     ) -> List[PaperMetadata]:
-        params = {
+        params: dict[str, Any] = {
             "search_query": search_query,
             "start": start,
             "max_results": max_results,
@@ -48,28 +47,45 @@ class ArxivClient:
                     raise
                 logger.warning(f"arXiv API request attempt {attempt} failed ({e}). Retrying in {attempt * 3}s...")
                 time.sleep(attempt * 3)
+        return []
 
     def parse_feed(self, xml_content: str) -> List[PaperMetadata]:
-        feed = feedparser.parse(xml_content)
+        feed: Any = feedparser.parse(xml_content)
         papers: List[PaperMetadata] = []
 
-        for entry in feed.entries:
+        entries: List[Any] = getattr(feed, "entries", [])
+        for entry in entries:
             # Extract paper ID from entry.id (e.g., http://arxiv.org/abs/2312.00001v1 -> 2312.00001)
-            raw_id = entry.id.split("/abs/")[-1]
+            raw_entry_id = getattr(entry, "id", "") or ""
+            entry_id = str(raw_entry_id)
+            raw_id = entry_id.split("/abs/")[-1]
             paper_id = re.sub(r"v\d+$", "", raw_id)
 
-            title = entry.title.replace("\n", " ").strip()
-            abstract = entry.summary.replace("\n", " ").strip()
+            raw_title = getattr(entry, "title", "") or ""
+            title = str(raw_title).replace("\n", " ").strip()
 
-            authors = [author.name for author in entry.get("authors", [])]
-            categories = [tag.term for tag in entry.get("tags", [])]
+            raw_summary = getattr(entry, "summary", "") or ""
+            abstract = str(raw_summary).replace("\n", " ").strip()
+
+            raw_authors = getattr(entry, "authors", []) or []
+            authors: List[str] = [
+                str(getattr(a, "name", a.get("name", "") if isinstance(a, dict) else ""))
+                for a in raw_authors
+            ]
+
+            raw_tags = getattr(entry, "tags", []) or []
+            categories: List[str] = [
+                str(getattr(t, "term", t.get("term", "") if isinstance(t, dict) else ""))
+                for t in raw_tags
+            ]
 
             # Parse date
-            published_str = entry.get("published", "")
+            published_val = getattr(entry, "published", "") or ""
+            published_str = str(published_val)
             try:
                 submitted_date = datetime.strptime(published_str, "%Y-%m-%dT%H:%M:%SZ")
             except ValueError:
-                submitted_date = datetime.utcnow()
+                submitted_date = datetime.now()
 
             pdf_url = f"https://arxiv.org/pdf/{paper_id}.pdf"
 

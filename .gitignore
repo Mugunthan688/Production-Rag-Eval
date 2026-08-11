@@ -46,6 +46,11 @@ data/*.local.json
 logs/
 *.log
 
+# Node & Web
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
 # Database files
 *.db
 *.sqlite
@@ -53,3 +58,4 @@ logs/
 
 # Streamlit
 .streamlit/secrets.toml
+

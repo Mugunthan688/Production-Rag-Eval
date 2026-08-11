@@ -19,7 +19,7 @@ class FeedbackAnalyzer:
         result = await self.session.execute(stmt)
         negative_feedback = result.scalars().all()
 
-        chunk_counter = Counter()
+        chunk_counter: Counter[str] = Counter()
         for fb in negative_feedback:
             for chunk_id in fb.chunks_used:
                 chunk_counter[chunk_id] += 1

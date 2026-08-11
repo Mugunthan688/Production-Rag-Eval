@@ -2,6 +2,7 @@ from .base import BaseChunker
 from .fixed import FixedSizeChunker
 from .recursive import RecursiveChunker
 from .semantic import SemanticChunker
+from .structure_chunker import StructureAwareChunker
 
 
 def get_chunker(
@@ -14,5 +15,7 @@ def get_chunker(
         return RecursiveChunker(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
     elif strategy_lower == "semantic":
         return SemanticChunker(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+    elif strategy_lower == "structure":
+        return StructureAwareChunker(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
     else:
-        raise ValueError(f"Unknown chunking strategy: '{strategy}'. Supported: fixed, recursive, semantic.")
+        raise ValueError(f"Unknown chunking strategy: '{strategy}'. Supported: fixed, recursive, semantic, structure.")

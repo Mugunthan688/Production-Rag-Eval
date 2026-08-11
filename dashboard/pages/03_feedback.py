@@ -10,10 +10,7 @@ import streamlit as st
 import httpx
 import os
 
-try:
-    from dashboard.components.styles import apply_master_theme
-except ImportError:
-    from components.styles import apply_master_theme
+from dashboard.components.styles import apply_master_theme
 
 st.set_page_config(page_title="Feedback Analytics", page_icon="💬", layout="wide")
 apply_master_theme()

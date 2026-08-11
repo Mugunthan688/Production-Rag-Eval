@@ -7,7 +7,15 @@ def render_metrics_table(df: pd.DataFrame):
         st.info("No experiment results found yet. Run evaluation scripts or trigger from the API.")
         return
 
-    st.dataframe(
-        df.style.highlight_max(axis=0, color="#d4edda", subset=["Precision@5", "Recall@5", "MRR", "Faithfulness", "Relevance"]),
-        use_container_width=True,
-    )
+    metrics_cols = ["Precision@5", "Recall@5", "MRR", "Faithfulness", "Relevance"]
+    available_subset = [col for col in metrics_cols if col in df.columns]
+
+    styled_df = df.style
+    if available_subset:
+        styled_df = styled_df.highlight_max(axis=0, color="#d4edda", subset=available_subset)
+
+    try:
+        st.dataframe(styled_df, use_container_width=True)
+    except TypeError:
+        st.dataframe(styled_df, width="stretch")
+
