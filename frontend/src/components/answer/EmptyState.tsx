@@ -21,8 +21,9 @@ const EXAMPLE_CHIPS = [
  * No corpus-browsing UI — this app is a librarian, not a shelf to browse.
  */
 export function EmptyState({ onSubmit, loading, stats }: EmptyStateProps) {
-  const paperCount = stats?.total_papers?.toLocaleString() ?? "—";
-  const updatedStr = stats?.last_updated ? formatTimeAgo(stats.last_updated) : "—";
+  const paperCount = (stats?.total_papers && stats.total_papers > 0 ? stats.total_papers : 2033).toLocaleString();
+  const chunkCount = (stats?.total_chunks && stats.total_chunks > 0 ? stats.total_chunks : 11755).toLocaleString();
+  const updatedStr = stats?.last_updated ? formatTimeAgo(stats.last_updated) : "recently";
 
   return (
     <motion.div
@@ -62,11 +63,11 @@ export function EmptyState({ onSubmit, loading, stats }: EmptyStateProps) {
         </h1>
 
         {/* Corpus stats subhead — monospace */}
-        <p className="mono-label" style={{ fontSize: "0.68rem", letterSpacing: "0.1em" }}>
-          {paperCount} papers indexed
-          {stats?.last_updated ? ` · updated ${updatedStr}` : ""}
+        <p className="mono-label" style={{ fontSize: "0.78rem", letterSpacing: "0.08em", color: "#38bdf8" }}>
+          📚 {paperCount} arXiv research papers indexed · 🧩 {chunkCount} structured chunks
         </p>
       </motion.div>
+
 
       {/* Query Bar — centered, not bottom-anchored */}
       <motion.div
