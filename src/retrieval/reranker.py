@@ -1,6 +1,5 @@
 import logging
 from typing import List, Tuple
-from sentence_transformers import CrossEncoder
 
 from src.db.models import ChunkORM
 from config.settings import settings
@@ -18,8 +17,10 @@ class CrossEncoderReranker:
     @property
     def model(self):
         if self._model is None:
+            from sentence_transformers import CrossEncoder
             self._model = CrossEncoder(self.model_name)
         return self._model
+
 
     def rerank(
         self, query: str, chunks: List[Tuple[ChunkORM, float]], top_k: int = settings.TOP_K_RERANK
