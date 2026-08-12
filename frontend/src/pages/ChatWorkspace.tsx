@@ -53,7 +53,8 @@ export function ChatWorkspace() {
       const errMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: `**Error**: Could not connect to the API server. Make sure the FastAPI backend is running at \`http://localhost:8000\`.\n\n\`\`\`\n${err}\n\`\`\``,
+        content: `**Error**: Could not connect to the API server. Make sure the FastAPI backend is running at \`https://production-rag-eval.onrender.com\`.\n\n\`\`\`\n${err}\n\`\`\``,
+
       };
       setMessages((prev) => [...prev, errMsg]);
     } finally {
