@@ -17,7 +17,8 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str | None = None
 
     # Defaults
-    EMBEDDING_PROVIDER: Literal["openai", "local", "gemini"] = "gemini"
+    EMBEDDING_PROVIDER: Literal["openai", "local", "gemini"] = "local"
+
     EMBEDDING_MODEL: str = "text-embedding-3-small"
     LOCAL_EMBEDDING_MODEL: str = "BAAI/bge-small-en-v1.5"
     EMBEDDING_DIMENSION: int = 384

@@ -54,26 +54,50 @@ class AnthropicLLMProvider(BaseLLMProvider):
 
 
 class GeminiLLMProvider(BaseLLMProvider):
-    def __init__(self, model: str = "gemini-flash-latest", api_key: str | None = None):
-        self.model = model if "gemini" in model else "gemini-flash-latest"
+    def __init__(self, model: str = "gemini-2.5-flash", api_key: str | None = None):
+        self.model = model if "gemini" in model else "gemini-2.5-flash"
         key = api_key or getattr(settings, "GEMINI_API_KEY", None) or os.getenv("GEMINI_API_KEY")
         self.api_key = key.strip() if key else None
 
     def generate(self, system_prompt: str, user_prompt: str) -> str:
         if not self.api_key or "YOUR_" in self.api_key:
             return "Error: Gemini API key missing."
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={self.api_key}"
-        payload = {
-            "contents": [{"parts": [{"text": f"{system_prompt}\n\n{user_prompt}"}]}]
-        }
-        try:
-            resp = httpx.post(url, json=payload, timeout=30.0)
-            if resp.status_code == 200:
-                data = resp.json()
-                return data["candidates"][0]["content"]["parts"][0]["text"].strip()
-            return f"Error: Gemini API returned status {resp.status_code}: {resp.text}"
-        except Exception as e:
-            return f"Error: Gemini API request failed: {e}"
+        
+        # Priority order of available Gemini models
+        model_candidates = [
+            self.model.replace("models/", ""),
+            "gemini-2.5-flash",
+            "gemini-3.6-flash",
+            "gemini-2.5-pro",
+            "gemini-2.5-flash-lite",
+            "gemini-flash-latest"
+        ]
+
+        # Deduplicate candidates
+        candidates = []
+        for m in model_candidates:
+            if m not in candidates:
+                candidates.append(m)
+
+        for model_name in candidates:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={self.api_key}"
+            payload = {
+                "contents": [{"parts": [{"text": f"{system_prompt}\n\n{user_prompt}"}]}]
+            }
+            try:
+                resp = httpx.post(url, json=payload, timeout=25.0)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    candidates_res = data.get("candidates", [])
+                    if candidates_res and "content" in candidates_res[0]:
+                        parts = candidates_res[0]["content"].get("parts", [])
+                        if parts and "text" in parts[0]:
+                            return parts[0]["text"].strip()
+            except Exception:
+                continue
+
+        return "Error: All Gemini model attempts returned non-200 responses."
+
 
 
 def get_llm_provider(provider_name: str = settings.LLM_PROVIDER) -> BaseLLMProvider:
