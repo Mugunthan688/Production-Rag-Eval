@@ -100,10 +100,12 @@ export async function executeQuery(params: {
   query_rewriting?: boolean;
 }): Promise<QueryResponse> {
   let lastError: any = null;
-  for (let attempt = 0; attempt < 2; attempt++) {
+  const backoffs = [2000, 3500, 5000, 7500, 10000, 12000];
+
+  for (let attempt = 0; attempt < backoffs.length; attempt++) {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 180000);
+      const timeoutId = setTimeout(() => controller.abort(), 120000);
       const resp = await fetch(`${API_BASE}/query`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -122,13 +124,18 @@ export async function executeQuery(params: {
     } catch (err: any) {
       lastError = err;
       if (err?.name === "AbortError" || String(err).includes("aborted")) {
-        throw new Error("Render free-tier server cold start took longer than expected (~30s wake-up time). Please click submit again!");
+        throw new Error("Render free-tier server cold-start timed out (~60s limit). Please try submitting your question again.");
       }
-      if (attempt === 0) await new Promise((r) => setTimeout(r, 2500));
+      // If server is cold-starting or returning fetch error, retry silently
+      if (attempt < backoffs.length - 1) {
+        await new Promise((r) => setTimeout(r, backoffs[attempt]));
+      }
     }
   }
-  throw lastError || new Error("Failed to connect to API server.");
+  throw lastError || new Error("The cloud server is taking longer than expected to wake up from sleep mode (~30s Render cold-start). Please try clicking submit again in a few seconds!");
 }
+
+
 
 
 export async function fetchPapers(limit = 200): Promise<PaperData[]> {
