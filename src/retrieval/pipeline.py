@@ -76,11 +76,13 @@ class RetrievalPipeline:
         exact_terms = self.query_rewriter.extract_exact_terms(query)
         if self.query_rewriting_enabled and self.query_rewriter:
             queries, extracted_exact = self.query_rewriter.rewrite_and_decompose(query)
+            queries = queries[:2]  # Cap to top 2 sub-queries to guarantee fast <5s cloud retrieval
             exact_terms = list(set(exact_terms + extracted_exact))
             logger.info(f"Query expanded into {len(queries)} sub-queries: {queries}")
 
         diag.expanded_queries = queries
         diag.exact_terms_checked = exact_terms
+
 
         # Check if corpus contains exact terms
         diag.exact_term_in_corpus = await self._check_corpus_for_exact_terms(exact_terms, strategy)
