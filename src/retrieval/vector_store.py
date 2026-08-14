@@ -1,6 +1,6 @@
 import numpy as np
 from typing import List, Tuple
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..db.models import ChunkORM
@@ -33,7 +33,13 @@ class VectorStore:
     ) -> List[Tuple[ChunkORM, float]]:
         query_embedding = self.embedder.embed_query(query)
 
-        stmt = select(ChunkORM).where(ChunkORM.chunking_strategy == strategy)
+        # MEMORY-SAFE: cap at 3000 rows to limit RAM — loads full embedding vectors
+        # but only for a bounded subset, not all 11,755 chunks simultaneously.
+        stmt = (
+            select(ChunkORM)
+            .where(ChunkORM.chunking_strategy == strategy)
+            .limit(3000)
+        )
         result = await self.session.execute(stmt)
         chunks = list(result.scalars().all())
 
@@ -50,3 +56,4 @@ class VectorStore:
 
         scored.sort(key=lambda x: x[1], reverse=True)
         return scored[:top_k]
+
