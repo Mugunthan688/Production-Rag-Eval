@@ -103,7 +103,7 @@ export async function executeQuery(params: {
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000);
+      const timeoutId = setTimeout(() => controller.abort(), 180000);
       const resp = await fetch(`${API_BASE}/query`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -117,15 +117,19 @@ export async function executeQuery(params: {
         }),
       });
       clearTimeout(timeoutId);
-      if (!resp.ok) throw new Error(`API error: ${resp.status}`);
+      if (!resp.ok) throw new Error(`Backend returned HTTP ${resp.status}`);
       return await resp.json();
-    } catch (err) {
+    } catch (err: any) {
       lastError = err;
+      if (err?.name === "AbortError" || String(err).includes("aborted")) {
+        throw new Error("Render free-tier server cold start took longer than expected (~30s wake-up time). Please click submit again!");
+      }
       if (attempt === 0) await new Promise((r) => setTimeout(r, 2500));
     }
   }
   throw lastError || new Error("Failed to connect to API server.");
 }
+
 
 export async function fetchPapers(limit = 200): Promise<PaperData[]> {
   try {
