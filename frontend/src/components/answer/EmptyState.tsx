@@ -64,8 +64,9 @@ export function EmptyState({ onSubmit, loading, stats }: EmptyStateProps) {
 
         {/* Corpus stats subhead — monospace */}
         <p className="mono-label" style={{ fontSize: "0.78rem", letterSpacing: "0.08em", color: "#38bdf8" }}>
-          📚 {paperCount} arXiv research papers indexed · 🧩 {chunkCount} structured chunks
+          📚 {paperCount} arXiv research papers indexed · 🧩 {chunkCount} structured chunks · updated {updatedStr}
         </p>
+
       </motion.div>
 
 
