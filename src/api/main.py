@@ -10,9 +10,14 @@ from .routes import health, query, ingest, eval as eval_route, feedback, papers
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Initialize DB schemas & extensions on startup
-    await init_db()
+    # Initialize DB schemas & extensions on startup safely
+    try:
+        await init_db()
+    except Exception as e:
+        import logging
+        logging.getLogger("uvicorn.error").warning(f"Database init warning (non-fatal): {e}")
     yield
+
 
 
 app = FastAPI(
