@@ -121,10 +121,11 @@ class RetrievalPipeline:
         diag.rrf_fused_count = len(deduped)
         diag.exact_term_in_rrf = any(self._contains_term(c.text, exact_terms) for c, _ in deduped)
 
-        # 4. Optional Reranking with exact term preservation
+        # 4. Optional Reranking with exact term preservation (optimized for fast cloud CPU inference)
         final_results: List[Tuple[ChunkORM, float]] = []
         if self.reranker_enabled and self.reranker and deduped:
-            reranked = self.reranker.rerank(query, deduped, top_k=top_k_rerank * 2)
+            candidates_to_rerank = deduped[:12]
+            reranked = self.reranker.rerank(query, candidates_to_rerank, top_k=top_k_rerank)
             
             # Ensure exact term candidates are preserved if available in candidate pool
             exact_matches = [item for item in reranked if self._contains_term(item[0].text, exact_terms)]
@@ -141,6 +142,7 @@ class RetrievalPipeline:
                     break
         else:
             final_results = deduped[:top_k_rerank]
+
 
         # Primary-Source-First Prioritization: Ensure chunks from primary foundational papers are placed first
         primary_ids = set(PRIMARY_FOUNDATIONAL_PAPERS.keys())
