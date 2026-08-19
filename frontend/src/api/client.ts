@@ -1,4 +1,6 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://production-rag-eval.onrender.com";
+const rawBase = import.meta.env.VITE_API_BASE_URL || "https://production-rag-eval.onrender.com";
+const API_BASE = rawBase.replace(/\/+$/, "").trim();
+
 
 
 
