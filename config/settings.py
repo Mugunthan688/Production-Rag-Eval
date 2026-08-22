@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     # App & Database
     APP_NAME: str = "Production-Grade RAG System"
     LOG_LEVEL: str = "INFO"
-    DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/rag_db"
+    DATABASE_URL: str = "sqlite+aiosqlite:///./rag_app.db"
 
     # Keys
     OPENAI_API_KEY: str | None = None
@@ -25,7 +25,8 @@ class Settings(BaseSettings):
 
 
     LLM_PROVIDER: Literal["openai", "anthropic", "gemini", "local"] = "gemini"
-    LLM_MODEL: str = "gemini-flash-latest"
+    LLM_MODEL: str = "gemini-2.5-flash"
+
 
     DEFAULT_CHUNKING_STRATEGY: Literal["fixed", "recursive", "semantic"] = "recursive"
     CHUNK_SIZE: int = 500

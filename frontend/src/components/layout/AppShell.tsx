@@ -10,11 +10,13 @@ import { ConstellationTrace, type TraceTarget } from "../fx/ConstellationTrace";
 import {
   executeQuery,
   fetchStats,
+  API_BASE,
   type QueryResponse,
   type StatsData,
   type HistoryEntry,
   type ChunkData,
 } from "../../api/client";
+
 
 interface ConversationTurn {
   id: string;
@@ -125,9 +127,9 @@ export function AppShell() {
       const errTurn: ConversationTurn = {
         id: `ai-${Date.now()}`,
         role: "assistant",
-        content: `**Connection error** — could not reach the API server.\n\nMake sure the FastAPI backend is running at \`https://production-rag-eval.onrender.com\`.\n\n\`\`\`\n${err}\n\`\`\``,
-
+        content: `**Connection error** — could not reach the API server.\n\nMake sure the FastAPI backend is running at \`${API_BASE}\`.\n\n\`\`\`\n${err}\n\`\`\``,
       };
+
       setTurns((prev) => [...prev, errTurn]);
     } finally {
       setLoading(false);

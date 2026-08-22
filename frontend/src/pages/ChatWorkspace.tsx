@@ -3,7 +3,8 @@ import { motion } from "framer-motion";
 import { ChatMessage } from "../components/chat/ChatMessage";
 import { CommandBar } from "../components/chat/CommandBar";
 import { ShimmerBlock } from "../components/ui/Shimmer";
-import { executeQuery, type QueryResponse, type ChunkData, type ConfidenceReport } from "../api/client";
+import { executeQuery, API_BASE, type QueryResponse, type ChunkData, type ConfidenceReport } from "../api/client";
+
 
 interface Message {
   id: string;
@@ -53,9 +54,9 @@ export function ChatWorkspace() {
       const errMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: `**Error**: Could not connect to the API server. Make sure the FastAPI backend is running at \`https://production-rag-eval.onrender.com\`.\n\n\`\`\`\n${err}\n\`\`\``,
-
+        content: `**Error**: Could not connect to the API server. Make sure the FastAPI backend is running at \`${API_BASE}\`.\n\n\`\`\`\n${err}\n\`\`\``,
       };
+
       setMessages((prev) => [...prev, errMsg]);
     } finally {
       setLoading(false);
